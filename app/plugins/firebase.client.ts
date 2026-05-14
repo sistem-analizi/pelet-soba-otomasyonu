@@ -1,11 +1,21 @@
-import { initializeApp, getApps, getApp } from 'firebase/app'
+import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app'
 import { getDatabase } from 'firebase/database'
 
 export default defineNuxtPlugin(() => {
-  const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    databaseURL: process.env.FIREBASE_DATABASE_URL,
-    projectId: process.env.FIREBASE_PROJECT_ID,
+  const config = useRuntimeConfig()
+
+  const publicConfig = config.public as {
+    firebaseApiKey?: string
+    firebaseAuthDomain?: string
+    firebaseDatabaseURL?: string
+    firebaseProjectId?: string
+  }
+
+  const firebaseConfig: FirebaseOptions = {
+    apiKey: publicConfig.firebaseApiKey,
+    authDomain: publicConfig.firebaseAuthDomain,
+    databaseURL: publicConfig.firebaseDatabaseURL,
+    projectId: publicConfig.firebaseProjectId,
   }
 
   const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
@@ -13,7 +23,7 @@ export default defineNuxtPlugin(() => {
 
   return {
     provide: {
-      db
-    }
+      db,
+    },
   }
 })
