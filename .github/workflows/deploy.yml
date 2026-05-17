@@ -1,0 +1,17 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: sistem-analizi/ci/.github/workflows/deploy.yml@v1
+    with:
+      build_type: node
+      year: '2026'
+      build_command: npm run generate
+      output_dir: .output/public
+      clean_slate: true
+    secrets: inherit
