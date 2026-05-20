@@ -135,6 +135,16 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                                 Otomatik
                             </button>
                             <button 
+                                @click="changeMod(2)"
+                                :disabled="isSaving || apiStore.loading"
+                                class="px-3 py-1.5 text-xs font-medium transition-colors"
+                                :class="formAyarlar.mod === 2 
+                                    ? 'bg-purple-500 text-white' 
+                                    : 'bg-white text-slate-500 hover:bg-slate-100'"
+                            >
+                                Isı Duyarlı
+                            </button>
+                            <button 
                                 @click="changeMod(1)"
                                 :disabled="isSaving || apiStore.loading"
                                 class="px-3 py-1.5 text-xs font-medium transition-colors"
@@ -246,8 +256,66 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                     <div v-if="formAyarlar.mod === 0" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
                         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Otomatik Mod</h3>
                         <div class="flex items-center justify-between text-slate-600">
-                            <span>Sıcaklık otomatik olarak ayarlanmaktadır</span>
+                            <span>Basit otomatik mod aktif</span>
                             <span class="text-lg">🤖</span>
+                        </div>
+                    </div>
+
+                    <!-- Kullanıcı Ayarları (Otomatik Mod) -->
+                    <div v-if="formAyarlar.mod === 0" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                        <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Ayarları Düzenle</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-slate-600">Dakikada Yakıt Atımı:</span>
+                                    <span class="font-semibold text-slate-800">{{ formAyarlar.dakikada_atilan }} ölçü</span>
+                                </div>
+                                <input 
+                                    type="range"
+                                    v-model.number="formAyarlar.dakikada_atilan" 
+                                    :disabled="isSaving || apiStore.loading"
+                                    min="1"
+                                    max="100"
+                                    step="1"
+                                    class="w-full h-2 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                                />
+                            </div>
+
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-slate-600">Dolum Süresi:</span>
+                                    <span class="font-semibold text-slate-800">{{ formAyarlar.dolum_suresi }} ms</span>
+                                </div>
+                                <input 
+                                    type="range"
+                                    v-model.number="formAyarlar.dolum_suresi" 
+                                    :disabled="isSaving || apiStore.loading"
+                                    min="100"
+                                    max="5000"
+                                    step="100"
+                                    class="w-full h-2 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-slate-600"
+                                />
+                            </div>
+
+                            <div class="flex justify-end pt-1">
+                                <button 
+                                    @click="saveAyarlar()"
+                                    :disabled="isSaving || apiStore.loading"
+                                    class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    <UIcon v-if="isSaving" name="i-heroicons-arrow-path" class="size-4 animate-spin" />
+                                    <span>{{ isSaving ? 'Kaydediliyor...' : 'Ayarları Kaydet' }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Isı Duyarlı Otomatik Mod Bilgisi -->
+                    <div v-if="formAyarlar.mod === 2" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                        <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Isı Duyarlı Otomatik Mod</h3>
+                        <div class="flex items-center justify-between text-slate-600">
+                            <span>Sıcaklık sensörüne göre yakıt otomatik ayarlanmaktadır</span>
+                            <span class="text-lg">🌡️</span>
                         </div>
                     </div>
 
@@ -286,8 +354,8 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                         </div>
                     </div>
 
-                    <!-- Kullanıcı Ayarları (Otomatik Mod) -->
-                    <div v-if="formAyarlar.mod === 0" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <!-- Kullanıcı Ayarları (Isı Duyarlı Otomatik Mod) -->
+                    <div v-if="formAyarlar.mod === 2" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
                         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Ayarları Düzenle</h3>
                         <div class="space-y-4">
                             <div>

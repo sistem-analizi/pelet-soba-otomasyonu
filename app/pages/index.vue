@@ -49,11 +49,20 @@ onUnmounted(() => {
                         <div class="space-y-3 mb-4">
                             <div class="flex items-center gap-2">
                                 <UIcon 
-                                :name="apiStore.data.ayarlar.mod === 0 ? 'boxicons:robot' : 'wordpress:settings'"
-                                :class="apiStore.data.ayarlar.mod === 0 ? 'text-orange-500' : 'text-blue-500'" 
+                                :name="apiStore.data.ayarlar.mod === 0 || apiStore.data.ayarlar.mod === 2 ? 'boxicons:robot' : 'wordpress:settings'"
+                                :class="apiStore.data.ayarlar.mod === 0 || apiStore.data.ayarlar.mod === 2 ? 'text-orange-500' : 'text-blue-500'" 
                                 class="size-10"
                             />
-                                <span class="font-semibold text-slate-800">{{ apiStore.data.ayarlar.mod === 0 ? 'Otomatik' : 'Manuel' }}</span>
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-500">Mod</span>
+                                    <span class="font-semibold text-slate-800">
+                                        {{ 
+                                            apiStore.data.ayarlar.mod === 0 ? 'Otomatik' : 
+                                            apiStore.data.ayarlar.mod === 1 ? 'Manuel' : 
+                                            'Isı Duyarlı'
+                                        }}
+                                    </span>
+                                </div>
                             </div>
                             
                             <div class="flex items-center gap-2">
