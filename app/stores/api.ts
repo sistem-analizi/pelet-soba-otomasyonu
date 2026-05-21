@@ -7,7 +7,7 @@ export const useApiStore = defineStore('ApiStore', () => {
   const data = ref<Soba>({
     ayarlar: {
       dolum_suresi: 0,
-      mod: 0,
+      mod: 2,
       dakikada_atilan: 0,
       max_sicaklik: 0,
       min_sicaklik: 0,
@@ -39,7 +39,7 @@ export const useApiStore = defineStore('ApiStore', () => {
           : {
               ayarlar: {
                 dolum_suresi:0,
-                mod: 0,
+                mod: 2,
                 dakikada_atilan: 0,
                 max_sicaklik: 0,
                 min_sicaklik: 0,

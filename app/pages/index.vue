@@ -57,7 +57,7 @@ onUnmounted(() => {
                                     <span class="text-xs text-slate-500">Mod</span>
                                     <span class="font-semibold text-slate-800">
                                         {{ 
-                                            apiStore.data.ayarlar.mod === 0 ? 'Otomatik' : 
+                                            apiStore.data.ayarlar.mod === 2 ? 'Otomatik' : 
                                             apiStore.data.ayarlar.mod === 1 ? 'Manuel' : 
                                             'Isı Duyarlı'
                                         }}

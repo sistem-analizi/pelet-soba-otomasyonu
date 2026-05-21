@@ -125,20 +125,20 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                         <!-- Mod Seçimi -->
                         <div class="flex rounded-lg overflow-hidden border border-purple-200">
                             <button 
-                                @click="changeMod(0)"
+                                @click="changeMod(2)"
                                 :disabled="isSaving || apiStore.loading"
                                 class="px-3 py-1.5 text-xs font-medium transition-colors"
-                                :class="formAyarlar.mod === 0 
+                                :class="formAyarlar.mod === 2 
                                     ? 'bg-purple-500 text-white' 
                                     : 'bg-white text-slate-500 hover:bg-slate-100'"
                             >
                                 Otomatik
                             </button>
                             <button 
-                                @click="changeMod(2)"
+                                @click="changeMod(0)"
                                 :disabled="isSaving || apiStore.loading"
                                 class="px-3 py-1.5 text-xs font-medium transition-colors"
-                                :class="formAyarlar.mod === 2 
+                                :class="formAyarlar.mod === 0 
                                     ? 'bg-purple-500 text-white' 
                                     : 'bg-white text-slate-500 hover:bg-slate-100'"
                             >
@@ -253,7 +253,7 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                     </div>
 
                     <!-- Otomatik Mod Bilgisi -->
-                    <div v-if="formAyarlar.mod === 0" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <div v-if="formAyarlar.mod === 2" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
                         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Otomatik Mod</h3>
                         <div class="flex items-center justify-between text-slate-600">
                             <span>Basit otomatik mod aktif</span>
@@ -262,7 +262,7 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                     </div>
 
                     <!-- Kullanıcı Ayarları (Otomatik Mod) -->
-                    <div v-if="formAyarlar.mod === 0" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <div v-if="formAyarlar.mod === 2" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
                         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Ayarları Düzenle</h3>
                         <div class="space-y-4">
                             <div>
@@ -311,7 +311,7 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                     </div>
 
                     <!-- Isı Duyarlı Otomatik Mod Bilgisi -->
-                    <div v-if="formAyarlar.mod === 2" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <div v-if="formAyarlar.mod === 0" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
                         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Isı Duyarlı Otomatik Mod</h3>
                         <div class="flex items-center justify-between text-slate-600">
                             <span>Sıcaklık sensörüne göre yakıt otomatik ayarlanmaktadır</span>
@@ -355,7 +355,7 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                     </div>
 
                     <!-- Kullanıcı Ayarları (Isı Duyarlı Otomatik Mod) -->
-                    <div v-if="formAyarlar.mod === 2" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <div v-if="formAyarlar.mod === 0" class="bg-slate-50 rounded-xl p-4 border border-slate-200">
                         <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Ayarları Düzenle</h3>
                         <div class="space-y-4">
                             <div>
