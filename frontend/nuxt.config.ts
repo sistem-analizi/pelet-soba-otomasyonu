@@ -9,8 +9,14 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   ssr: false,
   modules: ['@nuxt/ui', '@pinia/nuxt'],
+  nitro: {
+    prerender: {
+      crawlLinks: false,
+    },
+  },
   runtimeConfig: {
     public: {
+      phpApiUrl: process.env.NUXT_PUBLIC_PHP_API_URL || 'http://127.0.0.1:3001',
       firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
       firebaseDatabaseURL: process.env.NUXT_PUBLIC_FIREBASE_DATABASE_URL,
       firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,

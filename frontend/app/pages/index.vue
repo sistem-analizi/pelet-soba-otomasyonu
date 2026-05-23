@@ -81,8 +81,8 @@ onUnmounted(() => {
                             
                             <div class="flex items-center gap-2">
                                 <UIcon name="i-heroicons-cube" class="size-5 text-amber-600"/>
-                                <span class="text-slate-600">Pelet:</span>
-                                <span class="font-semibold text-slate-800">{{ apiStore.data.ayarlar.dakikada_atilan }} ölçü/dk</span>
+                                <span class="text-slate-600">Boşaltma:</span>
+                                <span class="font-semibold text-slate-800">{{ Math.round(60000 / apiStore.data.ayarlar.dakikada_atilan) }} ms</span>
                             </div>
                         </div>
                         

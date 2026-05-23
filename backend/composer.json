@@ -1,0 +1,20 @@
+{
+    "name": "goktug/backend",
+    "autoload": {
+        "psr-4": {
+            "Goktug\\Backend\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Goktugilker",
+            "email": "240928036@ogr.comu.edu.tr"
+        }
+    ],
+    "require": {
+        "slim/slim": "^4.15",
+        "slim/psr7": "^1.8",
+        "kreait/firebase-php": "^8.2",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

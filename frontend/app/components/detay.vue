@@ -18,23 +18,58 @@ const formDurum = ref({
 });
 
 const isSaving = ref(false);
+const hasChanges = ref(false);
 
-// Form verilerini apiStore'dan senkronize et
+// Detay paneli açılırken form'u resetle
+watch(() => detayStore.detay, (isOpen) => {
+    if (isOpen) {
+        // Açılırken form'u API verilerine senkronize et
+        formAyarlar.value = {
+            dolum_suresi: apiStore.data.ayarlar.dolum_suresi,
+            mod: apiStore.data.ayarlar.mod,
+            min_sicaklik: apiStore.data.ayarlar.min_sicaklik,
+            max_sicaklik: apiStore.data.ayarlar.max_sicaklik,
+            dakikada_atilan: apiStore.data.ayarlar.dakikada_atilan,
+        };
+        formDurum.value = {
+            aktif: apiStore.data.durum.aktif,
+            doldur: apiStore.data.durum.doldur,
+        };
+        hasChanges.value = false;
+    }
+});
+
+// Form değiştiğinde hasChanges'i true yap
+watch(() => formAyarlar.value, () => {
+    hasChanges.value = true;
+}, { deep: true });
+
+watch(() => formDurum.value, () => {
+    hasChanges.value = true;
+}, { deep: true });
+
+// Form verilerini apiStore'dan senkronize et - SADECE değişiklik yoksa
 watch(() => apiStore.data.ayarlar, (newVal) => {
-    formAyarlar.value = {
-        dolum_suresi: newVal.dolum_suresi,
-        mod: newVal.mod,
-        min_sicaklik: newVal.min_sicaklik,
-        max_sicaklik: newVal.max_sicaklik,
-        dakikada_atilan: newVal.dakikada_atilan,
-    };
+    // Kullanıcı değişiklik yapmamışsa güncelle
+    if (!hasChanges.value) {
+        formAyarlar.value = {
+            dolum_suresi: newVal.dolum_suresi,
+            mod: newVal.mod,
+            min_sicaklik: newVal.min_sicaklik,
+            max_sicaklik: newVal.max_sicaklik,
+            dakikada_atilan: newVal.dakikada_atilan,
+        };
+    }
 }, { deep: true });
 
 watch(() => apiStore.data.durum, (newVal) => {
-    formDurum.value = {
-        aktif: newVal.aktif,
-        doldur: newVal.doldur,
-    };
+    // Kullanıcı değişiklik yapmamışsa güncelle
+    if (!hasChanges.value) {
+        formDurum.value = {
+            aktif: newVal.aktif,
+            doldur: newVal.doldur,
+        };
+    }
 }, { deep: true });
 
 // Ayarları kaydet
@@ -47,6 +82,7 @@ const saveAyarlar = async () => {
             max_sicaklik: formAyarlar.value.max_sicaklik,
             dakikada_atilan: formAyarlar.value.dakikada_atilan,
         });
+        hasChanges.value = false;
     } finally {
         isSaving.value = false;
     }
@@ -57,6 +93,7 @@ const toggleStatus = async () => {
     isSaving.value = true;
     try {
         await apiStore.setAktif(!formDurum.value.aktif);
+        hasChanges.value = false;
     } finally {
         isSaving.value = false;
     }
@@ -67,6 +104,7 @@ const handleDoldur = async () => {
     isSaving.value = true;
     try {
         await apiStore.setDoldur(180, true);
+        hasChanges.value = false;
     } finally {
         isSaving.value = false;
     }
@@ -77,19 +115,23 @@ const handleBosalt = async () => {
     isSaving.value = true;
     try {
         await apiStore.setDoldur(0, false);
+        hasChanges.value = false;
     } finally {
         isSaving.value = false;
     }
 };
 
-// Mod değiştir
-const changeMod = async (newMod: number) => {
-    isSaving.value = true;
-    try {
-        await apiStore.setMod(newMod);
-    } finally {
-        isSaving.value = false;
-    }
+// Mod değiştir (UI hemen güncellensin, Firebase arka planda kaydedilsin)
+const changeMod = (newMod: number) => {
+    formAyarlar.value.mod = newMod;
+    hasChanges.value = true;
+    // Arka planda Firebase'e kaydet, yavaşlık yapmasın
+    apiStore.setMod(newMod).then(() => {
+        hasChanges.value = false;
+    }).catch(() => {
+        // Hata durumunda form geri al
+        formAyarlar.value.mod = apiStore.data.ayarlar.mod;
+    });
 };
 
 // Manuel modda dolum süresi için debounce
@@ -267,18 +309,22 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                         <div class="space-y-4">
                             <div>
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-slate-600">Dakikada Yakıt Atımı:</span>
-                                    <span class="font-semibold text-slate-800">{{ formAyarlar.dakikada_atilan }} ölçü</span>
+                                    <span class="text-slate-600">Boşaltma Süresi:</span>
+                                    <span class="font-semibold text-slate-800">{{ Math.round(60000 / formAyarlar.dakikada_atilan) }} ms</span>
                                 </div>
                                 <input 
                                     type="range"
-                                    v-model.number="formAyarlar.dakikada_atilan" 
+                                    :value="Math.round(60000 / formAyarlar.dakikada_atilan)" 
+                                    @input="(e) => { formAyarlar.dakikada_atilan = Math.round(60000 / Number(e.target.value)) }"
                                     :disabled="isSaving || apiStore.loading"
-                                    min="1"
-                                    max="100"
-                                    step="1"
+                                    min="600"
+                                    max="60000"
+                                    step="100"
                                     class="w-full h-2 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
                                 />
+                                <div class="text-xs text-slate-500 mt-1">
+                                    {{ formAyarlar.dakikada_atilan }} ölçü/dk
+                                </div>
                             </div>
 
                             <div>
@@ -344,8 +390,8 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
                                 <span class="font-bold text-slate-800">{{ apiStore.data.ayarlar.max_sicaklik }}°C</span>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-slate-600">Dakikada Yakıt Atımı:</span>
-                                <span class="font-bold text-slate-800">{{ apiStore.data.ayarlar.dakikada_atilan }} ölçü</span>
+                                <span class="text-slate-600">Boşaltma Süresi:</span>
+                                <span class="font-bold text-slate-800">{{ Math.round(60000 / apiStore.data.ayarlar.dakikada_atilan) }} ms</span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-slate-600">Dolum Süresi:</span>
@@ -392,18 +438,22 @@ watch(() => formAyarlar.value.dolum_suresi, (newVal) => {
 
                             <div>
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-slate-600">Dakikada Yakıt Atımı:</span>
-                                    <span class="font-semibold text-slate-800">{{ formAyarlar.dakikada_atilan }} ölçü</span>
+                                    <span class="text-slate-600">Boşaltma Süresi:</span>
+                                    <span class="font-semibold text-slate-800">{{ Math.round(60000 / formAyarlar.dakikada_atilan) }} ms</span>
                                 </div>
                                 <input 
                                     type="range"
-                                    v-model.number="formAyarlar.dakikada_atilan" 
+                                    :value="Math.round(60000 / formAyarlar.dakikada_atilan)" 
+                                    @input="(e) => { formAyarlar.dakikada_atilan = Math.round(60000 / Number(e.target.value)) }"
                                     :disabled="isSaving || apiStore.loading"
-                                    min="1"
-                                    max="100"
-                                    step="1"
+                                    min="600"
+                                    max="60000"
+                                    step="100"
                                     class="w-full h-2 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
                                 />
+                                <div class="text-xs text-slate-500 mt-1">
+                                    {{ formAyarlar.dakikada_atilan }} ölçü/dk
+                                </div>
                             </div>
 
                             <div>
