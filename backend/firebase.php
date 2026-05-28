@@ -14,6 +14,6 @@ $serviceAccount=[
 
 ];
 $factory = (new Factory)->withServiceAccount($serviceAccount)->withDatabaseUri(
-    'https://pelet-sobasi-default-rtdb.europe-west1.firebasedatabase.app'
+    $_ENV['DATABASE_URL']
 );;
 return $factory->createDatabase();
